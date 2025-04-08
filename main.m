@@ -1,25 +1,23 @@
-% RUID: 208001821
-
 %% Step 1: Generate Input Bits
 RUID = 208001821;
 rng(RUID);
 N = 10000;
-bb = randi([0 1], 1, N); % Original input bits
+bb = randi([0 1], 1, N);
 disp('First 10 bits of bb:');
 disp(bb(1:10));
 
 %% Step 2: Binary Symmetric Channel (BSC)
 J = 10;
-p_vals = 2.^-(1:J); % p = 2^-j
+p_vals = 2.^-(1:J);
 ee = zeros(J, N);
 bbg = zeros(J, N);
 simulated_errors = zeros(1, J);
 
 for j = 1:J
     p = p_vals(j);
-    ee(j,:) = rand(1, N) < p; % 1 means error
-    bbg(j,:) = xor(bb, ee(j,:)); % flip bits with error
-    simulated_errors(j) = sum(bbg(j,:) ~= bb); % count errors
+    ee(j,:) = rand(1, N) < p;
+    bbg(j,:) = xor(bb, ee(j,:));
+    simulated_errors(j) = sum(bbg(j,:) ~= bb);
 end
 
 % 2a. Analytical Probability of Error (same as p)
@@ -50,16 +48,16 @@ grid on;
 %% Step 3: Additive White Gaussian Noise (AWGN) Channel
 SNRdB = 0:7;
 SNR = 10.^(SNRdB / 10);
-aa = 2*bb - 1; % 0 -> -1, 1 -> 1
+aa = 2*bb - 1;
 simulated_awgn_errors = zeros(1, length(SNR));
 be_awgn = zeros(length(SNR), N);
 
 for j = 1:length(SNR)
-    sigma = sqrt(1 / (2*SNR(j))); % std dev of Gaussian noise
+    sigma = sqrt(1 / (2*SNR(j)));
     noise = sigma * randn(1, N);
     rr = aa + noise;
-    be_awgn(j,:) = rr > 0; % Threshold at 0
-    simulated_awgn_errors(j) = sum(be_awgn(j,:) ~= bb); % Count errors
+    be_awgn(j,:) = rr > 0;
+    simulated_awgn_errors(j) = sum(be_awgn(j,:) ~= bb);
 end
 
 % 3a. Analytical error probability using Q-function
